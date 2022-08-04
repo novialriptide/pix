@@ -7,16 +7,35 @@ class HomePageState extends State {
   String searchKeyTerm = "";
   List<Widget> images = [];
 
-  Future<List<Widget>> loadImages(String keyTerm) async {
-    List<Widget> widgets = [];
-    List illusts = await client.searchIllust(keyTerm) as List<PixivIllust>;
+  Future loadImage(String unencodedPath) async {
+    unencodedPath.replaceAll("https://i.pximg.net", "");
+    var response = await client.httpClient.get(
+        Uri.https("i.pximg.net", unencodedPath),
+        headers: client.getHeader());
+    try {
+      return Image.memory(response.bodyBytes);
+    } catch (e) {
+      return;
+    }
+  }
 
-    for (var illust in illusts) {
-      Image img = Image.network(illust.imageUrls[0]);
+  Future loadImages(String keyTerm) async {
+    List<Widget> widgets = [];
+    List illusts = await client.searchIllust(keyTerm);
+    int a = 0;
+
+    for (PixivIllust illust in illusts) {
+      if (illust.imageUrls['square_medium'] == null) {
+        continue;
+      }
+      Image img = await loadImage(illust.imageUrls['square_medium']);
       widgets.add(img);
+      a += 1;
     }
 
-    return widgets as Future<List<Widget>>;
+    setState(() {
+      images = widgets;
+    });
   }
 
   @override
@@ -52,7 +71,7 @@ class HomePageState extends State {
                 child: Center(
                   child: TextField(
                       onSubmitted: (value) {
-                        searchKeyTerm = value;
+                        loadImages(value);
                       },
                       decoration: const InputDecoration(
                           hintText: 'Search keyterm/ID',
@@ -65,7 +84,17 @@ class HomePageState extends State {
           SliverList(
             delegate: SliverChildListDelegate([
               SizedBox(
-                  height: 400, child: Center(child: Row(children: images))),
+                  height: 12000,
+                  child: Center(
+                      child: ListView.builder(
+                          itemCount: images.length,
+                          itemBuilder: (context, index) {
+                            debugPrint('lmao');
+                            final illust = images[index];
+                            debugPrint(illust.toString());
+                            debugPrint(index.toString());
+                            return illust;
+                          }))),
             ]),
           ),
         ],

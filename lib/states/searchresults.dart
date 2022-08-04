@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pxdart/pxdart.dart';
 import './seachoptions.dart';
 
 class HomePageState extends State {
   @override
   Widget build(BuildContext context) {
     List<Widget> images = [];
-
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -44,8 +42,8 @@ class HomePageState extends State {
           // Other Sliver Widgets
           SliverList(
             delegate: SliverChildListDelegate([
-              const SizedBox(
-                  height: 400, child: Center(child: Text('No results'))),
+              SizedBox(
+                  height: 400, child: Center(child: Column(children: images))),
             ]),
           ),
         ],

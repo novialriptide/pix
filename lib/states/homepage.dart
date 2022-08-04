@@ -3,9 +3,26 @@ import 'package:pxdart/pxdart.dart';
 import './seachoptions.dart';
 
 class HomePageState extends State {
+  late PixivClient client;
+  String searchKeyTerm = "";
+  List<Widget> images = [];
+
+  Future<List<Widget>> loadImages(String keyTerm) async {
+    List<Widget> widgets = [];
+    List illusts = await client.searchIllust(keyTerm) as List<PixivIllust>;
+
+    for (var illust in illusts) {
+      Image img = Image.network(illust.imageUrls[0]);
+      widgets.add(img);
+    }
+
+    return widgets as Future<List<Widget>>;
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Widget> images = [];
+    client = PixivClient();
+    client.connect("jSC-iVbHPw6-HZckMLpOrh7FbPohFLRa_7JoqNIxAVk");
 
     return Scaffold(
       body: CustomScrollView(
@@ -32,9 +49,12 @@ class HomePageState extends State {
                 width: double.infinity,
                 height: 40,
                 color: Colors.white,
-                child: const Center(
+                child: Center(
                   child: TextField(
-                      decoration: InputDecoration(
+                      onSubmitted: (value) {
+                        searchKeyTerm = value;
+                      },
+                      decoration: const InputDecoration(
                           hintText: 'Search keyterm/ID',
                           prefixIcon: Icon(Icons.search))),
                 ),
@@ -44,8 +64,8 @@ class HomePageState extends State {
           // Other Sliver Widgets
           SliverList(
             delegate: SliverChildListDelegate([
-              const SizedBox(
-                  height: 400, child: Center(child: Text('No results'))),
+              SizedBox(
+                  height: 400, child: Center(child: Row(children: images))),
             ]),
           ),
         ],

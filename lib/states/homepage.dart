@@ -7,15 +7,23 @@ import './seachoptions.dart';
 class HomePageState extends State {
   late PixivClient client;
   String searchKeyTerm = "";
-  List<Widget> images = [];
+  List<Uint8List> images = [];
 
-  Future loadImage(String unencodedPath) async {
-    Image image = Image.memory(await client.getIllustImageBytes(unencodedPath));
-    return image;
+  @override
+  void initState() {
+    client = PixivClient();
+    client.connect("jSC-iVbHPw6-HZckMLpOrh7FbPohFLRa_7JoqNIxAVk");
+    super.initState();
+  }
+
+  Future<Uint8List> loadImage(String unencodedPath) async {
+    Uint8List out = await client.getIllustImageBytes(unencodedPath);
+    return out;
   }
 
   Future loadImages(String keyTerm) async {
-    List<Widget> widgets = [];
+    // Use getRelatedIllusts() to simulate Pixiv Premium
+    List<Uint8List> widgets = [];
     List illusts = await client.searchPopularPreviewIllusts(keyTerm);
     int a = 0;
 
@@ -23,21 +31,18 @@ class HomePageState extends State {
       if (illust.imageUrls['square_medium'] == null) {
         continue;
       }
-      Image img = await loadImage(illust.imageUrls['medium']);
-      widgets.add(img);
+      Uint8List img = await loadImage(illust.imageUrls['square_medium']);
+      // widgets.add(img);
       a += 1;
-    }
 
-    setState(() {
-      images = widgets;
-    });
+      setState(() {
+        images.add(img);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    client = PixivClient();
-    client.connect("jSC-iVbHPw6-HZckMLpOrh7FbPohFLRa_7JoqNIxAVk");
-
     return Scaffold(
       appBar: AppBar(
           title: Container(
@@ -67,7 +72,7 @@ class HomePageState extends State {
       body: ListView.builder(
           itemCount: images.length,
           itemBuilder: (context, index) {
-            final illust = images[index];
+            final illust = Image.memory(images[index]);
             return illust;
           }),
     );

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:pxdart/pxdart.dart';
 import './seachoptions.dart';
@@ -8,20 +10,13 @@ class HomePageState extends State {
   List<Widget> images = [];
 
   Future loadImage(String unencodedPath) async {
-    unencodedPath.replaceAll("https://i.pximg.net", "");
-    var response = await client.httpClient.get(
-        Uri.https("i.pximg.net", unencodedPath),
-        headers: client.getHeader());
-    try {
-      return Image.memory(response.bodyBytes);
-    } catch (e) {
-      return;
-    }
+    Image image = Image.memory(await client.getIllustImageBytes(unencodedPath));
+    return image;
   }
 
   Future loadImages(String keyTerm) async {
     List<Widget> widgets = [];
-    List illusts = await client.searchIllust(keyTerm);
+    List illusts = await client.searchPopularPreviewIllusts(keyTerm);
     int a = 0;
 
     for (PixivIllust illust in illusts) {
@@ -84,17 +79,14 @@ class HomePageState extends State {
           SliverList(
             delegate: SliverChildListDelegate([
               SizedBox(
-                  height: 12000,
+                  height: 1200,
                   child: Center(
                       child: ListView.builder(
                           itemCount: images.length,
                           itemBuilder: (context, index) {
-                            debugPrint('lmao');
                             final illust = images[index];
-                            debugPrint(illust.toString());
-                            debugPrint(index.toString());
                             return illust;
-                          }))),
+                          }
             ]),
           ),
         ],

@@ -23,7 +23,7 @@ class HomePageState extends State {
       if (illust.imageUrls['square_medium'] == null) {
         continue;
       }
-      Image img = await loadImage(illust.imageUrls['square_medium']);
+      Image img = await loadImage(illust.imageUrls['medium']);
       widgets.add(img);
       a += 1;
     }
@@ -39,58 +39,37 @@ class HomePageState extends State {
     client.connect("jSC-iVbHPw6-HZckMLpOrh7FbPohFLRa_7JoqNIxAVk");
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            pinned: true,
-            snap: false,
-            centerTitle: false,
-            title: const Text('nakiapp'),
-            actions: [
-              IconButton(
+      appBar: AppBar(
+          title: Container(
+            width: double.infinity,
+            height: 40,
+            color: Colors.white,
+            child: Center(
+              child: TextField(
+                  onSubmitted: (value) {
+                    loadImages(value);
+                  },
+                  decoration: const InputDecoration(
+                      hintText: 'Search keyterm/ID',
+                      prefixIcon: Icon(Icons.search))),
+            ),
+          ),
+          actions: [
+            IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => SearchOptionsState()));
-                },
-              ),
-            ],
-            bottom: AppBar(
-              title: Container(
-                width: double.infinity,
-                height: 40,
-                color: Colors.white,
-                child: Center(
-                  child: TextField(
-                      onSubmitted: (value) {
-                        loadImages(value);
-                      },
-                      decoration: const InputDecoration(
-                          hintText: 'Search keyterm/ID',
-                          prefixIcon: Icon(Icons.search))),
-                ),
-              ),
-            ),
-          ),
-          // Other Sliver Widgets
-          SliverList(
-            delegate: SliverChildListDelegate([
-              SizedBox(
-                  height: 1200,
-                  child: Center(
-                      child: ListView.builder(
-                          itemCount: images.length,
-                          itemBuilder: (context, index) {
-                            final illust = images[index];
-                            return illust;
-                          }
-            ]),
-          ),
-        ],
-      ),
+                })
+          ]),
+      body: ListView.builder(
+          itemCount: images.length,
+          itemBuilder: (context, index) {
+            final illust = images[index];
+            return illust;
+          }),
     );
   }
 }

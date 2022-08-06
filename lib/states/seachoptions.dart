@@ -14,7 +14,7 @@ class SearchOptionsState extends StatelessWidget {
             pinned: true,
             snap: false,
             centerTitle: false,
-            title: Text('nakiapp'),
+            title: Text('Search Options'),
           ),
           // Other Sliver Widgets
           SliverList(

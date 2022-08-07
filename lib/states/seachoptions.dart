@@ -31,13 +31,14 @@ class SearchOptionsState extends StatelessWidget {
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                               labelStyle: TextStyle(),
-                              labelText: 'Sort'),
+                              labelText: 'Sort by'),
                           key: const Key('sort'),
                           value: sortDropDownValue,
                           items: <String>[
-                            'popular_desc',
-                            'date_desc',
-                            'date_asc'
+                            'Popularity (Non-Premium)', // Custom Search
+                            'Popularity', // popular_desc
+                            'Date Ascending', // date_asc
+                            'Date Descending' // date_desc
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,

@@ -7,12 +7,31 @@ import './seachoptions.dart';
 class HomePageState extends State {
   late PixivClient client;
   String searchKeyTerm = "";
+  bool hasMore = false;
   List<Uint8List> images = [];
+  List<int> imageIds = [];
+  int noPremiumPopularityIndex = 0;
+  final controller = ScrollController();
 
   @override
   void initState() {
     client = PixivClient();
     client.connect("jSC-iVbHPw6-HZckMLpOrh7FbPohFLRa_7JoqNIxAVk");
+    controller.addListener(() {
+      if (controller.position.atEdge) {
+        bool isTop = controller.position.pixels == 0;
+        if (noPremiumPopularityIndex > imageIds.length) {
+          hasMore = false;
+        }
+
+        if (!isTop && hasMore) {
+          loadRelatedImages(imageIds[noPremiumPopularityIndex],
+              targetTag: searchKeyTerm);
+          debugPrint(noPremiumPopularityIndex.toString());
+          noPremiumPopularityIndex += 1;
+        }
+      }
+    });
     super.initState();
   }
 
@@ -21,22 +40,55 @@ class HomePageState extends State {
     return out;
   }
 
-  Future loadImages(String keyTerm) async {
+  Future<void> loadImages(String keyTerm) async {
     // Use getRelatedIllusts() to simulate Pixiv Premium
     List<Uint8List> widgets = [];
-    List illusts = await client.searchPopularPreviewIllusts(keyTerm);
-    int a = 0;
+    List illusts = await client.getPopularPreviewIllusts(keyTerm);
 
     for (PixivIllust illust in illusts) {
       if (illust.imageUrls['square_medium'] == null) {
         continue;
       }
       Uint8List img = await loadImage(illust.imageUrls['square_medium']);
-      // widgets.add(img);
-      a += 1;
 
       setState(() {
+        hasMore = true;
         images.add(img);
+        imageIds.add(illust.id);
+      });
+    }
+  }
+
+  Future<void> loadRelatedImages(int illustId, {String? targetTag}) async {
+    List<Uint8List> widgets = [];
+    List illusts = await client.getIllustRelated(illustId);
+
+    for (PixivIllust illust in illusts) {
+      if (illust.imageUrls['square_medium'] == null) {
+        continue;
+      }
+      Uint8List img = await loadImage(illust.imageUrls['square_medium']);
+
+      setState(() {
+        if (!imageIds.contains(illust.id)) {
+          if (targetTag == null) {
+            return;
+          }
+
+          List<String> illustTags = [];
+          for (Map tag in illust.jsonTags) {
+            illustTags.add((tag['name'] as String).toLowerCase());
+            if (tag['translated_name'] != null) {
+              illustTags.add((tag['translated_name'] as String).toLowerCase());
+            }
+          }
+          debugPrint(illustTags.toString());
+          debugPrint(illust.jsonTags.toString());
+          if (illustTags.contains(targetTag.toLowerCase())) {
+            images.add(img);
+            imageIds.add(illust.id);
+          }
+        }
       });
     }
   }
@@ -52,6 +104,8 @@ class HomePageState extends State {
             child: Center(
               child: TextField(
                   onSubmitted: (value) {
+                    searchKeyTerm = value;
+                    images = [];
                     loadImages(value);
                   },
                   decoration: const InputDecoration(
@@ -59,6 +113,7 @@ class HomePageState extends State {
                       prefixIcon: Icon(Icons.search))),
             ),
           ),
+          shape: const ContinuousRectangleBorder(),
           actions: [
             IconButton(
                 icon: const Icon(Icons.settings),
@@ -69,11 +124,33 @@ class HomePageState extends State {
                           builder: (context) => SearchOptionsState()));
                 })
           ]),
-      body: ListView.builder(
-          itemCount: images.length,
+      body: GridView.builder(
+          controller: controller,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 10,
+            crossAxisCount: 3,
+          ),
+          itemCount: images.length + 1,
           itemBuilder: (context, index) {
-            final illust = Image.memory(images[index]);
-            return illust;
+            if (index < images.length) {
+              final illust = Column(
+                children: [
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(32.0),
+                      child: Image.memory(images[index]))
+                ],
+              );
+              return illust;
+            } else {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: Center(
+                    child: hasMore
+                        ? const CircularProgressIndicator()
+                        : Container()),
+              );
+            }
           }),
     );
   }

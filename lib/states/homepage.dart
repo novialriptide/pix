@@ -1,10 +1,16 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:nakiapp/globals.dart';
 import 'package:pxdart/pxdart.dart';
 import './seachoptions.dart';
 
-class HomePageState extends State {
+class SearchScreen extends StatefulWidget {
+  @override
+  SearchState createState() => SearchState();
+}
+
+class SearchState extends State<SearchScreen> {
   late PixivClient client;
   String searchKeyTerm = "";
   bool hasMore = false;
@@ -16,7 +22,7 @@ class HomePageState extends State {
   @override
   void initState() {
     client = PixivClient();
-    client.connect("jSC-iVbHPw6-HZckMLpOrh7FbPohFLRa_7JoqNIxAVk");
+    client.connect(refreshToken);
     controller.addListener(() {
       if (controller.position.atEdge) {
         bool isTop = controller.position.pixels == 0;
@@ -82,8 +88,6 @@ class HomePageState extends State {
               illustTags.add((tag['translated_name'] as String).toLowerCase());
             }
           }
-          debugPrint(illustTags.toString());
-          debugPrint(illust.jsonTags.toString());
           if (illustTags.contains(targetTag.toLowerCase())) {
             images.add(img);
             imageIds.add(illust.id);
@@ -118,10 +122,8 @@ class HomePageState extends State {
             IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SearchOptionsState()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SearchOptions()));
                 })
           ]),
       body: GridView.builder(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nakiapp/globals.dart';
+import 'package:nakiapp/states/login.dart';
 
 import 'states/homepage.dart';
 
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.lightBlue,
         ),
-        home: const HomePage());
+        home: LoginScreen());
   }
 }
 
@@ -26,5 +28,5 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State createState() => HomePageState();
+  State createState() => LoginState();
 }

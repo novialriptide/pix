@@ -16,6 +16,7 @@ class SearchState extends State<SearchScreen> {
   String searchKeyTerm = "";
   bool hasMore = false;
   bool isLoadingMore = false;
+  List<PixivIllust> cachedIllusts = [];
   List<Uint8List> images = [];
   List<int> imageIds = [];
   int noPremiumPopularityIndex = 0;
@@ -64,6 +65,7 @@ class SearchState extends State<SearchScreen> {
         hasMore = true;
         images.add(img);
         imageIds.add(illust.id);
+        cachedIllusts.add(illust);
       });
     }
 
@@ -98,6 +100,7 @@ class SearchState extends State<SearchScreen> {
           if (illustTags.contains(targetTag.toLowerCase())) {
             images.add(img);
             imageIds.add(illust.id);
+            cachedIllusts.add(illust);
           }
         }
       });
@@ -145,12 +148,19 @@ class SearchState extends State<SearchScreen> {
           itemCount: images.length + 1,
           itemBuilder: (context, index) {
             if (index < images.length) {
-              final illust = Column(
-                children: [
+              final illust = InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => IllustViewScreen(
+                              illust: cachedIllusts[index], client: client)));
+                },
+                child: Column(children: [
                   ClipRRect(
                       borderRadius: BorderRadius.circular(32.0),
                       child: Image.memory(images[index]))
-                ],
+                ]),
               );
               return illust;
             } else {

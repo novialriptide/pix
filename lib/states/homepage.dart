@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:nakiapp/globals.dart';
+import 'package:nakiapp/states/illustview.dart';
 import 'package:pxdart/pxdart.dart';
 import './seachoptions.dart';
 
@@ -14,6 +15,7 @@ class SearchState extends State<SearchScreen> {
   late PixivClient client;
   String searchKeyTerm = "";
   bool hasMore = false;
+  bool isLoadingMore = false;
   List<Uint8List> images = [];
   List<int> imageIds = [];
   int noPremiumPopularityIndex = 0;
@@ -30,7 +32,7 @@ class SearchState extends State<SearchScreen> {
           hasMore = false;
         }
 
-        if (!isTop && hasMore) {
+        if (!isTop && hasMore && !isLoadingMore) {
           loadRelatedImages(imageIds[noPremiumPopularityIndex],
               targetTag: searchKeyTerm);
           debugPrint(noPremiumPopularityIndex.toString());
@@ -48,6 +50,7 @@ class SearchState extends State<SearchScreen> {
 
   Future<void> loadImages(String keyTerm) async {
     // Use getRelatedIllusts() to simulate Pixiv Premium
+    isLoadingMore = true;
     List<Uint8List> widgets = [];
     List illusts = await client.getPopularPreviewIllusts(keyTerm);
 
@@ -63,9 +66,13 @@ class SearchState extends State<SearchScreen> {
         imageIds.add(illust.id);
       });
     }
+
+    isLoadingMore = false;
   }
 
   Future<void> loadRelatedImages(int illustId, {String? targetTag}) async {
+    isLoadingMore = true;
+
     List<Uint8List> widgets = [];
     List illusts = await client.getIllustRelated(illustId);
 
@@ -95,6 +102,8 @@ class SearchState extends State<SearchScreen> {
         }
       });
     }
+
+    isLoadingMore = false;
   }
 
   @override
@@ -148,7 +157,7 @@ class SearchState extends State<SearchScreen> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5.0),
                 child: Center(
-                    child: hasMore
+                    child: isLoadingMore
                         ? const CircularProgressIndicator()
                         : Container()),
               );

@@ -20,18 +20,44 @@ class IllustViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text(illust.title)),
-        body: ClipRRect(
-            borderRadius: BorderRadius.circular(32.0),
-            child: FutureBuilder<Uint8List>(
-                future: getImage(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-                  if (snapshot.hasData) {
-                    return Image.memory(snapshot.data!);
-                  } else {
-                    return const Text('lmao');
-                  }
-                })));
+        body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          InkWell(
+              child: FutureBuilder<Uint8List>(
+                  future: getImage(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<Uint8List> snapshot) {
+                    if (snapshot.hasData) {
+                      return Image.memory(snapshot.data!);
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  })),
+          Container(
+              color: Colors.grey[100],
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5.0),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(illust.displayName),
+                                Text(illust.userName,
+                                    style: const TextStyle(fontSize: 13.5))
+                              ]),
+                        )
+                      ]),
+                      Text(illust.title,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 17)),
+                      Text(illust.caption)
+                    ],
+                  )))
+        ]));
   }
 }
 

@@ -35,10 +35,12 @@ class SearchState extends State<SearchScreen> {
         }
 
         if (!isTop && hasMore && !isLoadingMore) {
-          loadRelatedImages(imageIds[noPremiumPopularityIndex],
-              targetTag: searchKeyTerm);
-          debugPrint(noPremiumPopularityIndex.toString());
-          noPremiumPopularityIndex += 1;
+          for (int i = 0; i < 5; i++) {
+            loadRelatedImages(imageIds[noPremiumPopularityIndex],
+                targetTag: searchKeyTerm);
+            debugPrint(noPremiumPopularityIndex.toString());
+            noPremiumPopularityIndex += 1;
+          }
         }
       }
     });
@@ -151,26 +153,19 @@ class SearchState extends State<SearchScreen> {
           itemCount: images.length + 1,
           itemBuilder: (context, index) {
             if (index < images.length) {
-              final illust = AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(milliseconds: 375),
-                  child: SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(
-                          child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => IllustViewScreen(
-                                            illust: cachedIllusts[index],
-                                            client: client)));
-                              },
-                              child: Column(children: [
-                                ClipRRect(
-                                    borderRadius: BorderRadius.circular(32.0),
-                                    child: Image.memory(images[index]))
-                              ])))));
+              final illust = InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => IllustViewScreen(
+                                illust: cachedIllusts[index], client: client)));
+                  },
+                  child: Column(children: [
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(32.0),
+                        child: Image.memory(images[index]))
+                  ]));
               return illust;
             } else {
               return Padding(

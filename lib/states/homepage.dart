@@ -122,6 +122,8 @@ class SearchState extends State<SearchScreen> {
                   onSubmitted: (value) {
                     searchKeyTerm = value;
                     images = [];
+                    imageIds = [];
+                    cachedIllusts = [];
                     loadImages(value);
                   },
                   decoration: const InputDecoration(

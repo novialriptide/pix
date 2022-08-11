@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/illustview.dart';
 import 'package:pxdart/pxdart.dart';
@@ -150,20 +151,26 @@ class SearchState extends State<SearchScreen> {
           itemCount: images.length + 1,
           itemBuilder: (context, index) {
             if (index < images.length) {
-              final illust = InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => IllustViewScreen(
-                              illust: cachedIllusts[index], client: client)));
-                },
-                child: Column(children: [
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(32.0),
-                      child: Image.memory(images[index]))
-                ]),
-              );
+              final illust = AnimationConfiguration.staggeredList(
+                  position: index,
+                  duration: const Duration(milliseconds: 375),
+                  child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                          child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => IllustViewScreen(
+                                            illust: cachedIllusts[index],
+                                            client: client)));
+                              },
+                              child: Column(children: [
+                                ClipRRect(
+                                    borderRadius: BorderRadius.circular(32.0),
+                                    child: Image.memory(images[index]))
+                              ])))));
               return illust;
             } else {
               return Padding(

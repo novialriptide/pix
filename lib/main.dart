@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'nakiapp',
         theme: ThemeData(
-          primarySwatch: Colors.lightBlue,
+          primaryColor: Colors.lightBlue,
         ),
         home: SearchScreen());
   }

@@ -23,7 +23,7 @@ class IllustViewScreen extends StatelessWidget {
   Widget getTagModel(RichText richText) {
     return Chip(
       label: richText,
-      backgroundColor: Colors.lightBlueAccent,
+      backgroundColor: Colors.lightBlue,
     );
   }
 
@@ -55,11 +55,14 @@ class IllustViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-          title: Text(illust.title),
           shape: const ContinuousRectangleBorder(),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           actions: [
-            IconButton(icon: const Icon(Icons.file_download), onPressed: () {})
+            IconButton(icon: const Icon(Icons.file_download), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.menu), onPressed: () {})
           ]),
       body: SingleChildScrollView(
           child:
@@ -78,11 +81,12 @@ class IllustViewScreen extends StatelessWidget {
               }
             }),
         Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.only(
+                bottom: 10.0, left: 10.0, right: 10.0, top: 2.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
+                  padding: const EdgeInsets.only(bottom: 2),
                   child: Row(children: [
                     InkWell(
                         onTap: () {
@@ -91,28 +95,32 @@ class IllustViewScreen extends StatelessWidget {
                               MaterialPageRoute(
                                   builder: (context) => SearchScreen()));
                         },
-                        child: Chip(
-                            avatar: FutureBuilder<Uint8List>(
-                                future: getUserImage(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<Uint8List> snapshot) {
-                                  if (snapshot.hasData) {
-                                    return ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100.0),
-                                        child: Image.memory(snapshot.data!));
-                                  } else {
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  }
-                                }),
-                            label: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(illust.displayName),
-                                  Text(illust.userName,
-                                      style: const TextStyle(fontSize: 13.5))
-                                ]))),
+                        child: Row(children: [
+                          SizedBox(
+                              height: 35,
+                              child: FutureBuilder<Uint8List>(
+                                  future: getUserImage(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<Uint8List> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(100.0),
+                                          child: Image.memory(snapshot.data!));
+                                    } else {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    }
+                                  })),
+                          const SizedBox(width: 7),
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(illust.displayName),
+                                Text(illust.userName,
+                                    style: const TextStyle(fontSize: 13.5))
+                              ])
+                        ])),
                     const Spacer(),
                     InkWell(
                         onTap: () {

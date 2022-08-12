@@ -162,15 +162,10 @@ class IllustViewScreen extends StatelessWidget {
           backgroundColor: Colors.lightBlueAccent,
           child: const Icon(Icons.favorite_border),
         ),
-        appBar: AppBar(
-            shape: const ContinuousRectangleBorder(),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            actions: [
-              IconButton(
-                  icon: const Icon(Icons.file_download), onPressed: () {}),
-              IconButton(icon: const Icon(Icons.menu), onPressed: () {})
-            ]),
+        appBar: AppBar(shape: const ContinuousRectangleBorder(), actions: [
+          IconButton(icon: const Icon(Icons.file_download), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.menu), onPressed: () {})
+        ]),
         body: SingleChildScrollView(
             controller: illustScrollController,
             child: Column(

@@ -8,7 +8,7 @@ class SearchOptions extends StatefulWidget {
 class SearchOptionsState extends State<SearchOptions> {
   @override
   Widget build(BuildContext context) {
-    String sortDropDownValue = 'popular_desc';
+    String sortDropDownValue = 'Popularity (Non-Premium)';
     String durationDropDownValue = 'none';
     List<Widget> stuff = [
       Padding(

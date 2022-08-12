@@ -153,8 +153,6 @@ class SearchState extends State<SearchScreen> {
         body: GridView.builder(
             controller: scrollController,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              mainAxisSpacing: 5,
-              crossAxisSpacing: 10,
               crossAxisCount: 3,
             ),
             itemCount: images.length + 1,
@@ -169,11 +167,7 @@ class SearchState extends State<SearchScreen> {
                                   illust: cachedIllusts[index],
                                   client: client)));
                     },
-                    child: Column(children: [
-                      ClipRRect(
-                          borderRadius: BorderRadius.circular(32.0),
-                          child: Image.memory(images[index]))
-                    ]));
+                    child: Image.memory(images[index]));
                 return illust;
               } else {
                 return Padding(

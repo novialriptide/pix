@@ -13,6 +13,9 @@ class IllustViewScreen extends StatelessWidget {
 
   List<String> imageUrls = [];
 
+  ScrollController illustScrollController = ScrollController();
+  ScrollController infoScrollController = ScrollController();
+
   void getImages() {
     if (illust.jsonMetaSinglePage.isNotEmpty) {
       imageUrls.add(illust.imageUrls['large']);
@@ -58,45 +61,35 @@ class IllustViewScreen extends StatelessWidget {
     return widgets;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    getImages();
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          shape: const ContinuousRectangleBorder(),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          actions: [
-            IconButton(icon: const Icon(Icons.file_download), onPressed: () {}),
-            IconButton(icon: const Icon(Icons.menu), onPressed: () {})
-          ]),
-      body: SingleChildScrollView(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: illust.pageCount,
-            itemBuilder: (context, index) {
-              return FutureBuilder<Uint8List>(
-                  future: client.getIllustImageBytes(imageUrls[index]),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<Uint8List> snapshot) {
-                    if (snapshot.hasData) {
-                      return Container(
-                          color: Colors.red,
-                          child:
-                              Image.memory(snapshot.data!, fit: BoxFit.cover));
-                    } else if (snapshot.hasError) {
-                      return Container();
-                    } else {
-                      return Container();
-                    }
-                  });
-            }),
-        Padding(
+  Widget illustWidget(BuildContext context) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: illust.pageCount,
+          itemBuilder: (context, index) {
+            return FutureBuilder<Uint8List>(
+                future: client.getIllustImageBytes(imageUrls[index]),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Container(
+                        color: Colors.red,
+                        child: Image.memory(snapshot.data!, fit: BoxFit.cover));
+                  } else if (snapshot.hasError) {
+                    return Container();
+                  } else {
+                    return Container();
+                  }
+                });
+          })
+    ]);
+  }
+
+  Widget illustInfoWidget(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        child: Padding(
             padding: const EdgeInsets.only(
                 bottom: 10.0, left: 10.0, right: 10.0, top: 2.0),
             child:
@@ -156,13 +149,32 @@ class IllustViewScreen extends StatelessWidget {
                   runSpacing: -7.0,
                   direction: Axis.horizontal,
                   children: getTagsAsWidgets()),
-            ]))
-      ])),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.lightBlueAccent,
-        child: const Icon(Icons.favorite_border),
-      ),
-    );
+            ])));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    getImages();
+    return Scaffold(
+        extendBodyBehindAppBar: true,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          backgroundColor: Colors.lightBlueAccent,
+          child: const Icon(Icons.favorite_border),
+        ),
+        appBar: AppBar(
+            shape: const ContinuousRectangleBorder(),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            actions: [
+              IconButton(
+                  icon: const Icon(Icons.file_download), onPressed: () {}),
+              IconButton(icon: const Icon(Icons.menu), onPressed: () {})
+            ]),
+        body: SingleChildScrollView(
+            controller: illustScrollController,
+            child: Column(
+              children: [illustWidget(context), illustInfoWidget(context)],
+            )));
   }
 }

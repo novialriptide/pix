@@ -6,14 +6,20 @@ import 'package:nakiapp/states/homepage.dart';
 import 'package:pxdart/pxdart.dart';
 
 class IllustViewScreen extends StatelessWidget {
-  const IllustViewScreen(
-      {super.key, required this.illust, required this.client});
+  IllustViewScreen({super.key, required this.illust, required this.client});
 
   final PixivClient client;
   final PixivIllust illust;
 
-  Future<Uint8List> getImage() async {
-    return await client.getIllustImageBytes(illust.imageUrls['large']);
+  List<String> imageUrls = [];
+
+  void getImages() {
+    if (illust.jsonMetaSinglePage.isNotEmpty) {
+      imageUrls.add(illust.imageUrls['large']);
+    }
+    for (Map img in illust.jsonMetaPages) {
+      imageUrls.add(img['image_urls']['medium']);
+    }
   }
 
   Future<Uint8List> getUserImage() async {
@@ -54,6 +60,7 @@ class IllustViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    getImages();
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -67,18 +74,22 @@ class IllustViewScreen extends StatelessWidget {
       body: SingleChildScrollView(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        FutureBuilder<Uint8List>(
-            future: getImage(),
-            builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-              if (snapshot.hasData) {
-                return InkWell(
-                    onTap: () {
-                      // Show image in full screen
-                    },
-                    child: Image.memory(snapshot.data!));
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
+        ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: illust.pageCount,
+            itemBuilder: (context, index) {
+              return FutureBuilder<Uint8List>(
+                  future: client.getIllustImageBytes(imageUrls[index]),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<Uint8List> snapshot) {
+                    if (snapshot.hasData) {
+                      return Image.memory(snapshot.data!);
+                    } else {
+                      return Container();
+                    }
+                  });
             }),
         Padding(
             padding: const EdgeInsets.only(
@@ -145,7 +156,7 @@ class IllustViewScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: Colors.lightBlueAccent,
-        child: const Icon(Icons.favorite),
+        child: const Icon(Icons.favorite_border),
       ),
     );
   }

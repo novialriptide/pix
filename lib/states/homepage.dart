@@ -87,7 +87,12 @@ class SearchState extends State<SearchScreen> {
       if (illust.imageUrls['square_medium'] == null) {
         continue;
       }
+
       Uint8List img = await loadImage(illust.imageUrls['square_medium']);
+
+      if (img.isEmpty) {
+        continue;
+      }
 
       setState(() {
         if (!imageIds.contains(illust.id)) {
@@ -158,17 +163,21 @@ class SearchState extends State<SearchScreen> {
             itemCount: images.length + 1,
             itemBuilder: (context, index) {
               if (index < images.length) {
-                final illust = InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => IllustViewScreen(
-                                  illust: cachedIllusts[index],
-                                  client: client)));
-                    },
-                    child: Image.memory(images[index]));
-                return illust;
+                try {
+                  final illust = InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => IllustViewScreen(
+                                    illust: cachedIllusts[index],
+                                    client: client)));
+                      },
+                      child: Image.memory(images[index]));
+                  return illust;
+                } catch (e) {
+                  return Container();
+                }
               } else {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0),

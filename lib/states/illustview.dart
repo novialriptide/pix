@@ -86,9 +86,11 @@ class IllustViewScreen extends StatelessWidget {
                       AsyncSnapshot<Uint8List> snapshot) {
                     if (snapshot.hasData) {
                       return Container(
-                          color: Colors.amber,
+                          color: Colors.red,
                           child:
                               Image.memory(snapshot.data!, fit: BoxFit.cover));
+                    } else if (snapshot.hasError) {
+                      return Container();
                     } else {
                       return Container();
                     }

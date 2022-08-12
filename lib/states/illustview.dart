@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/homepage.dart';
@@ -86,64 +87,62 @@ class IllustViewScreen extends StatelessWidget {
     ]);
   }
 
+  Widget infoHeaderWidget(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(children: [
+              InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SearchScreen()));
+                  },
+                  child: Row(children: [
+                    SizedBox(
+                        height: 35,
+                        child: FutureBuilder<Uint8List>(
+                            future: getUserImage(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<Uint8List> snapshot) {
+                              if (snapshot.hasData) {
+                                return ClipRRect(
+                                    borderRadius: BorderRadius.circular(100.0),
+                                    child: Image.memory(snapshot.data!));
+                              } else {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                            })),
+                    const SizedBox(width: 7),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(illust.displayName),
+                          Text(illust.userName,
+                              style: const TextStyle(fontSize: 13.5))
+                        ])
+                  ]))
+            ])));
+  }
+
   Widget illustInfoWidget(BuildContext context) {
     return Container(
         color: Colors.white,
+        width: MediaQuery.of(context).size.width,
         child: Padding(
             padding: const EdgeInsets.only(
                 bottom: 10.0, left: 10.0, right: 10.0, top: 2.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Row(children: [
-                    InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SearchScreen()));
-                        },
-                        child: Row(children: [
-                          SizedBox(
-                              height: 35,
-                              child: FutureBuilder<Uint8List>(
-                                  future: getUserImage(),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<Uint8List> snapshot) {
-                                    if (snapshot.hasData) {
-                                      return ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(100.0),
-                                          child: Image.memory(snapshot.data!));
-                                    } else {
-                                      return const Center(
-                                          child: CircularProgressIndicator());
-                                    }
-                                  })),
-                          const SizedBox(width: 7),
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(illust.displayName),
-                                Text(illust.userName,
-                                    style: const TextStyle(fontSize: 13.5))
-                              ])
-                        ])),
-                    const Spacer(),
-                    InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SearchScreen()));
-                        },
-                        child: const Chip(label: Text("Follow"))),
-                  ])),
               Text(illust.title,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 17)),
-              Text(illust.caption),
+              Text(illust.caption.isNotEmpty
+                  ? illust.caption
+                  : 'No caption available'),
               Wrap(
                   spacing: 5.0,
                   runSpacing: -7.0,
@@ -166,10 +165,14 @@ class IllustViewScreen extends StatelessWidget {
           IconButton(icon: const Icon(Icons.file_download), onPressed: () {}),
           IconButton(icon: const Icon(Icons.menu), onPressed: () {})
         ]),
-        body: SingleChildScrollView(
-            controller: illustScrollController,
-            child: Column(
-              children: [illustWidget(context), illustInfoWidget(context)],
-            )));
+        body: ExpandableBottomSheet(
+          expandableContent: illustInfoWidget(context),
+          background: SingleChildScrollView(
+              controller: illustScrollController,
+              child: Column(
+                children: [illustWidget(context)],
+              )),
+          persistentHeader: infoHeaderWidget(context),
+        ));
   }
 }

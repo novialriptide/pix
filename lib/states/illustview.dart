@@ -139,7 +139,7 @@ class IllustViewScreen extends StatelessWidget {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(illust.title,
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 17)),
+                      fontWeight: FontWeight.bold, fontSize: 18.5)),
               Text(illust.caption.isNotEmpty
                   ? illust.caption
                   : 'No caption available'),
@@ -148,6 +148,7 @@ class IllustViewScreen extends StatelessWidget {
                   runSpacing: -7.0,
                   direction: Axis.horizontal,
                   children: getTagsAsWidgets()),
+              const SizedBox(height: 70)
             ])));
   }
 

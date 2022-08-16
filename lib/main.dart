@@ -3,7 +3,7 @@ import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/illustview.dart';
 import 'package:nakiapp/states/login.dart';
 
-import 'states/homepage.dart';
+import 'states/searchpage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +21,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: Colors.lightBlue,
         ),
-        home: SearchScreen());
+        home: LoginScreen());
   }
 }

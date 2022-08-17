@@ -120,9 +120,10 @@ class IllustViewScreen extends StatelessWidget {
                     Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(illust.displayName),
-                          Text(illust.userName,
-                              style: const TextStyle(fontSize: 13.5))
+                          Text(illust.title,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          Text("${illust.displayName} ${illust.userName}")
                         ])
                   ]))
             ])));
@@ -137,9 +138,6 @@ class IllustViewScreen extends StatelessWidget {
                 bottom: 10.0, left: 10.0, right: 10.0, top: 2.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(illust.title,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18.5)),
               Text(illust.caption.isNotEmpty
                   ? illust.caption
                   : 'No caption available'),
@@ -167,6 +165,7 @@ class IllustViewScreen extends StatelessWidget {
           IconButton(icon: const Icon(Icons.menu), onPressed: () {})
         ]),
         body: ExpandableBottomSheet(
+          enableToggle: true,
           expandableContent: illustInfoWidget(context),
           background: SingleChildScrollView(
               controller: illustScrollController,

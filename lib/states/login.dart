@@ -2,10 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:nakiapp/globals.dart';
+import 'package:nakiapp/states/searchpage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:io';
 import 'dart:math';
 import 'package:oauth2/oauth2.dart' as oauth2;
+import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
@@ -27,8 +29,32 @@ class LoginState extends State<LoginScreen> {
     return base64Url.encode(sha256.convert(data).bytes).replaceAll('=', '');
   }
 
+  Future<Map<dynamic, dynamic>> getCode(
+      String errorUrl, String codeVerifier) async {
+    errorUrl = errorUrl.replaceAll('pixiv://account/login?code=', '');
+    errorUrl = errorUrl.replaceAll('&via=login', '');
+    Map<String, String> body = {
+      'client_id': clientId,
+      'client_secret': clientSecret,
+      'code': errorUrl,
+      'code_verifier': codeVerifier,
+      'grant_type': 'authorization_code',
+      'include_policy': 'true',
+      'redirect_uri': redirectUri
+    };
+    var response = await http.post(
+      Uri.https(authTokenHost, authTokenPath),
+      body: body,
+      headers: {'User-Agent': userAgent},
+    );
+    var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
+
+    return decodedResponse;
+  }
+
   @override
   Widget build(BuildContext context) {
+    WebViewController webViewController;
     String code_verifier = getTokenUrlSafe(32);
     String code_challenge = s256(utf8.encode(code_verifier)).toString();
     final loginParams = {
@@ -42,17 +68,26 @@ class LoginState extends State<LoginScreen> {
         path: '/web/v1/login',
         queryParameters: loginParams);
 
-    debugPrint(newLoginUrl.toString());
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('Refresh Token'),
         ),
         body: WebView(
+            onWebViewCreated: (WebViewController c) {
+              webViewController = c;
+            },
+            onWebResourceError: ((error) {
+              getCode(error.failingUrl.toString(), code_verifier)
+                  .then((result) {
+                refreshToken = result['refresh_token'];
+                debugPrint(refreshToken);
+
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => SearchScreen()));
+              });
+            }),
             javascriptMode: JavascriptMode.unrestricted,
-            onPageStarted: (url) => debugPrint('asd'),
-            onPageFinished: (url) => debugPrint('lmao'),
             initialUrl: newLoginUrl.toString(),
-            userAgent: 'PixivAndroidApp/5.0.234 (Android 11; Pixel 5)'));
+            userAgent: userAgent));
   }
 }

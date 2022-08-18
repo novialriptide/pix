@@ -124,24 +124,46 @@ class IllustViewScreen extends StatelessWidget {
                           Text(illust.title,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
-                          Text("${illust.displayName} ${illust.userName}")
+                          Text(illust.displayName)
                         ])
                   ]))
             ])));
   }
 
   Widget illustInfoWidget(BuildContext context) {
+    DateTime dateTime = DateTime.parse(illust.creationDate);
+    String dateTimeStr = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+    double statsPaddingX = 8;
+
     return Container(
         color: Colors.white,
         width: MediaQuery.of(context).size.width,
         child: Padding(
             padding: const EdgeInsets.only(
-                bottom: 10.0, left: 10.0, right: 10.0, top: 2.0),
+                bottom: 10.0, left: 10.0, right: 10.0, top: 10),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Text(dateTimeStr),
+                SizedBox(width: statsPaddingX),
+                Text(illust.totalViews.toString(),
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                const Text(" Views"),
+                SizedBox(width: statsPaddingX),
+                Text(illust.totalBookmarks.toString(),
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                const Text(" Bookmarks")
+              ]),
+              const SizedBox(height: 10),
+              const Text("Description",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 5),
               Text(illust.caption.isNotEmpty
                   ? illust.caption
                   : 'No caption available'),
+              const SizedBox(height: 10),
+              const Text("Tags", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 5),
               Wrap(
                   spacing: 5.0,
                   runSpacing: -7.0,
@@ -161,10 +183,14 @@ class IllustViewScreen extends StatelessWidget {
           backgroundColor: Colors.lightBlueAccent,
           child: const Icon(Icons.favorite_border),
         ),
-        appBar: AppBar(shape: const ContinuousRectangleBorder(), actions: [
-          IconButton(icon: const Icon(Icons.file_download), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.menu), onPressed: () {})
-        ]),
+        appBar: AppBar(
+            title: Text(illust.id.toString()),
+            shape: const ContinuousRectangleBorder(),
+            actions: [
+              IconButton(
+                  icon: const Icon(Icons.file_download), onPressed: () {}),
+              IconButton(icon: const Icon(Icons.menu), onPressed: () {})
+            ]),
         body: ExpandableBottomSheet(
           enableToggle: true,
           expandableContent: illustInfoWidget(context),

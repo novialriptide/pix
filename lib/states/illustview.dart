@@ -181,7 +181,10 @@ class IllustViewScreen extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
           backgroundColor: Colors.lightBlueAccent,
-          child: const Icon(Icons.favorite_border),
+          // ignore: sort_child_properties_last
+          child: illust.isBookmarked
+              ? const Icon(Icons.favorite)
+              : const Icon(Icons.favorite_border),
         ),
         appBar: AppBar(
             title: Text(illust.id.toString()),

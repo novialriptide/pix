@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/illustview.dart';
+import 'package:nakiapp/utils.dart';
 import 'package:pxdart/pxdart.dart';
+import '../models/pixivillust.dart';
 import './seachoptions.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -58,7 +60,7 @@ class SearchState extends State<SearchScreen> {
     // Use getRelatedIllusts() to simulate Pixiv Premium
     isLoadingMore = true;
     List<Uint8List> widgets = [];
-    List illusts = await client.getPopularPreviewIllusts(keyTerm);
+    List illusts = await getPopularPreviewIllusts(client, keyTerm);
 
     for (PixivIllust illust in illusts) {
       if (illust.imageUrls['square_medium'] == null) {
@@ -81,7 +83,7 @@ class SearchState extends State<SearchScreen> {
     isLoadingMore = true;
 
     List<Uint8List> widgets = [];
-    List illusts = await client.getIllustRelated(illustId);
+    List illusts = await getIllustRelated(client, illustId);
 
     for (PixivIllust illust in illusts) {
       if (illust.imageUrls['square_medium'] == null) {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/searchpage.dart';
 import 'package:pxdart/pxdart.dart';
+import '../models/pixivillust.dart';
 
 class IllustViewScreen extends StatelessWidget {
   IllustViewScreen({super.key, required this.illust, required this.client});

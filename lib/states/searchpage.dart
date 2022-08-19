@@ -18,6 +18,7 @@ class SearchScreen extends StatefulWidget {
 class SearchState extends State<SearchScreen> {
   late PixivClient client;
   String searchKeyTerm = "";
+  String incompleteSearchTerm = "";
   bool hasMore = false;
   bool isLoadingMore = false;
   List<PixivIllust> cachedIllusts = [];
@@ -121,6 +122,47 @@ class SearchState extends State<SearchScreen> {
     isLoadingMore = false;
   }
 
+  Widget suggestionsWidget(BuildContext context) {
+    return incompleteSearchTerm.isEmpty
+        ? const Center(child: Text('Nothing to suggest here.'))
+        : Container();
+  }
+
+  Widget resultsWidget(BuildContext context) {
+    return GridView.builder(
+        controller: scrollController,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ),
+        itemCount: images.length + 1,
+        itemBuilder: (context, index) {
+          if (index < images.length) {
+            try {
+              final illust = InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => IllustViewScreen(
+                                illust: cachedIllusts[index], client: client)));
+                  },
+                  child: Image.memory(images[index]));
+              return illust;
+            } catch (e) {
+              return Container();
+            }
+          } else {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: Center(
+                  child: isLoadingMore
+                      ? const CircularProgressIndicator()
+                      : Container()),
+            );
+          }
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,12 +176,18 @@ class SearchState extends State<SearchScreen> {
                     controller: textController,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.search,
+                    onChanged: ((value) {
+                      incompleteSearchTerm = value;
+                    }),
                     onSubmitted: (_) {
                       searchKeyTerm = textController.text;
                       images = [];
                       imageIds = [];
                       cachedIllusts = [];
-                      loadImages(textController.text);
+                      incompleteSearchTerm = '';
+                      if (searchKeyTerm.isNotEmpty) {
+                        loadImages(textController.text);
+                      }
                     },
                     decoration: const InputDecoration(
                         hintText: 'Search keyterm/ID',
@@ -157,38 +205,8 @@ class SearchState extends State<SearchScreen> {
                             builder: (context) => SearchOptions()));
                   })
             ]),
-        body: GridView.builder(
-            controller: scrollController,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-            ),
-            itemCount: images.length + 1,
-            itemBuilder: (context, index) {
-              if (index < images.length) {
-                try {
-                  final illust = InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => IllustViewScreen(
-                                    illust: cachedIllusts[index],
-                                    client: client)));
-                      },
-                      child: Image.memory(images[index]));
-                  return illust;
-                } catch (e) {
-                  return Container();
-                }
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Center(
-                      child: isLoadingMore
-                          ? const CircularProgressIndicator()
-                          : Container()),
-                );
-              }
-            }));
+        body: searchKeyTerm.isNotEmpty
+            ? resultsWidget(context)
+            : suggestionsWidget(context));
   }
 }

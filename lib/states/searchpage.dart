@@ -22,7 +22,7 @@ class SearchState extends State<SearchScreen> {
   bool hasMore = false;
   bool isLoadingMore = false;
 
-  List<String> suggestions = [];
+  List<Map<String, dynamic>> suggestions = [];
   List<PixivIllust> cachedIllusts = [];
   List<Uint8List> images = [];
   List<int> imageIds = [];
@@ -59,14 +59,24 @@ class SearchState extends State<SearchScreen> {
   }
 
   void submitSearch(String keyTerm) {
-    searchKeyTerm = textController.text;
+    if (keyTerm.isNotEmpty) {
+      searchKeyTerm = textController.text;
+      images = [];
+      imageIds = [];
+      cachedIllusts = [];
+      incompleteSearchTerm = '';
+      if (searchKeyTerm.isNotEmpty) {
+        loadImages(textController.text);
+      }
+    }
+  }
+
+  void resetSearch() {
+    searchKeyTerm = '';
     images = [];
     imageIds = [];
     cachedIllusts = [];
     incompleteSearchTerm = '';
-    if (searchKeyTerm.isNotEmpty) {
-      loadImages(textController.text);
-    }
   }
 
   Future<Uint8List> loadImage(String unencodedPath) async {
@@ -82,10 +92,10 @@ class SearchState extends State<SearchScreen> {
       return;
     }
 
-    var response = await client.getSearchAutoComplete(incompleteSearchTerm);
+    var response = await client.getSearchAutoCompleteV2(incompleteSearchTerm);
+
     setState(() {
-      suggestions =
-          List<String>.from(response['search_auto_complete_keywords']);
+      suggestions = List<Map<String, dynamic>>.from(response['tags']);
     });
   }
 
@@ -160,12 +170,24 @@ class SearchState extends State<SearchScreen> {
         : ListView.builder(
             itemCount: suggestions.length,
             itemBuilder: ((context, index) {
-              return ListTile(
-                  onTap: () {
-                    textController.text = suggestions[index];
-                    submitSearch(suggestions[index]);
-                  },
-                  title: Text(suggestions[index]));
+              String name = suggestions[index]['name'];
+              String? translatedName = suggestions[index]['translated_name'];
+              if (suggestions[index]['translated_name'] != null) {
+                return ListTile(
+                    title: Text(name),
+                    subtitle: Text(translatedName!),
+                    onTap: () {
+                      textController.text = name;
+                      submitSearch(name);
+                    });
+              } else {
+                return ListTile(
+                    title: Text(name),
+                    onTap: () {
+                      textController.text = name;
+                      submitSearch(name);
+                    });
+              }
             }));
   }
 
@@ -222,6 +244,9 @@ class SearchState extends State<SearchScreen> {
                     }),
                     onSubmitted: (_) {
                       submitSearch(textController.text);
+                    },
+                    onTap: () {
+                      resetSearch();
                     },
                     decoration: const InputDecoration(
                         hintText: 'Search keyterm/ID',

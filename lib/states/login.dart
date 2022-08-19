@@ -80,7 +80,6 @@ class LoginState extends State<LoginScreen> {
               getCode(error.failingUrl.toString(), code_verifier)
                   .then((result) {
                 refreshToken = result['refresh_token'];
-                debugPrint(refreshToken);
 
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => SearchScreen()));

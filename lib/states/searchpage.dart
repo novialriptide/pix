@@ -21,6 +21,8 @@ class SearchState extends State<SearchScreen> {
   String incompleteSearchTerm = "";
   bool hasMore = false;
   bool isLoadingMore = false;
+
+  List<String> suggestions = [];
   List<PixivIllust> cachedIllusts = [];
   List<Uint8List> images = [];
   List<int> imageIds = [];
@@ -52,9 +54,39 @@ class SearchState extends State<SearchScreen> {
     super.initState();
   }
 
+  bool isDisplayingResults() {
+    return searchKeyTerm.isNotEmpty && incompleteSearchTerm.isEmpty;
+  }
+
+  void submitSearch(String keyTerm) {
+    searchKeyTerm = textController.text;
+    images = [];
+    imageIds = [];
+    cachedIllusts = [];
+    incompleteSearchTerm = '';
+    if (searchKeyTerm.isNotEmpty) {
+      loadImages(textController.text);
+    }
+  }
+
   Future<Uint8List> loadImage(String unencodedPath) async {
     Uint8List out = await client.getIllustImageBytes(unencodedPath);
     return out;
+  }
+
+  Future<void> updateAutoComplete() async {
+    if (incompleteSearchTerm.isEmpty) {
+      setState(() {
+        suggestions = [];
+      });
+      return;
+    }
+
+    var response = await client.getSearchAutoComplete(incompleteSearchTerm);
+    setState(() {
+      suggestions =
+          List<String>.from(response['search_auto_complete_keywords']);
+    });
   }
 
   Future<void> loadImages(String keyTerm) async {
@@ -123,9 +155,18 @@ class SearchState extends State<SearchScreen> {
   }
 
   Widget suggestionsWidget(BuildContext context) {
-    return incompleteSearchTerm.isEmpty
-        ? const Center(child: Text('Nothing to suggest here.'))
-        : Container();
+    return suggestions.isEmpty
+        ? const Center(child: Text('Nothing to suggest.'))
+        : ListView.builder(
+            itemCount: suggestions.length,
+            itemBuilder: ((context, index) {
+              return ListTile(
+                  onTap: () {
+                    textController.text = suggestions[index];
+                    submitSearch(suggestions[index]);
+                  },
+                  title: Text(suggestions[index]));
+            }));
   }
 
   Widget resultsWidget(BuildContext context) {
@@ -177,16 +218,10 @@ class SearchState extends State<SearchScreen> {
                     textInputAction: TextInputAction.search,
                     onChanged: ((value) {
                       incompleteSearchTerm = value;
+                      updateAutoComplete();
                     }),
                     onSubmitted: (_) {
-                      searchKeyTerm = textController.text;
-                      images = [];
-                      imageIds = [];
-                      cachedIllusts = [];
-                      incompleteSearchTerm = '';
-                      if (searchKeyTerm.isNotEmpty) {
-                        loadImages(textController.text);
-                      }
+                      submitSearch(textController.text);
                     },
                     decoration: const InputDecoration(
                         hintText: 'Search keyterm/ID',
@@ -204,7 +239,7 @@ class SearchState extends State<SearchScreen> {
                             builder: (context) => SearchOptions()));
                   })
             ]),
-        body: searchKeyTerm.isNotEmpty
+        body: images.isNotEmpty
             ? resultsWidget(context)
             : suggestionsWidget(context));
   }

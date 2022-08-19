@@ -21,6 +21,7 @@ class SearchState extends State<SearchScreen> {
   String incompleteSearchTerm = "";
   bool hasMore = false;
   bool isLoadingMore = false;
+  bool showSuggests = true;
 
   List<Map<String, dynamic>> suggestions = [];
   List<PixivIllust> cachedIllusts = [];
@@ -60,6 +61,7 @@ class SearchState extends State<SearchScreen> {
 
   void submitSearch(String keyTerm) {
     if (keyTerm.isNotEmpty) {
+      showSuggests = false;
       searchKeyTerm = textController.text;
       images = [];
       imageIds = [];
@@ -246,7 +248,10 @@ class SearchState extends State<SearchScreen> {
                       submitSearch(textController.text);
                     },
                     onTap: () {
-                      resetSearch();
+                      showSuggests = true;
+                    },
+                    onEditingComplete: () {
+                      showSuggests = false;
                     },
                     decoration: const InputDecoration(
                         hintText: 'Search keyterm/ID',
@@ -264,7 +269,7 @@ class SearchState extends State<SearchScreen> {
                             builder: (context) => SearchOptions()));
                   })
             ]),
-        body: images.isNotEmpty
+        body: !showSuggests
             ? resultsWidget(context)
             : suggestionsWidget(context));
   }

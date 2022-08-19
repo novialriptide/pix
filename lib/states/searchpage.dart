@@ -153,12 +153,11 @@ class SearchState extends State<SearchScreen> {
             }
           } else {
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: Center(
-                  child: isLoadingMore
-                      ? const CircularProgressIndicator()
-                      : Container()),
-            );
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: Center(
+                    child: isLoadingMore
+                        ? const CircularProgressIndicator()
+                        : Container()));
           }
         });
   }

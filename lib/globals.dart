@@ -1,3 +1,5 @@
+import 'package:pxdart/pxdart.dart';
+
 String refreshToken = '';
 
 String userAgent = 'PixivAndroidApp/5.0.234 (Android 11; Pixel 5)';
@@ -11,3 +13,5 @@ String loginUrl = 'https://app-api.pixiv.net/web/v1/login';
 
 String authTokenHost = 'oauth.secure.pixiv.net';
 String authTokenPath = '/auth/token';
+
+PixivClient client = PixivClient();

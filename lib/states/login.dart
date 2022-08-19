@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:nakiapp/globals.dart';
+import 'package:nakiapp/states/recommended.dart';
 import 'package:nakiapp/states/searchpage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:io';
@@ -80,9 +81,12 @@ class LoginState extends State<LoginScreen> {
               getCode(error.failingUrl.toString(), code_verifier)
                   .then((result) {
                 refreshToken = result['refresh_token'];
+                client.connect(refreshToken);
 
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => SearchScreen()));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => RecommendedScreen()));
               });
             }),
             javascriptMode: JavascriptMode.unrestricted,

@@ -16,7 +16,6 @@ class SearchScreen extends StatefulWidget {
 }
 
 class SearchState extends State<SearchScreen> {
-  late PixivClient client;
   String searchKeyTerm = "";
   String incompleteSearchTerm = "";
   bool hasMore = false;
@@ -33,8 +32,6 @@ class SearchState extends State<SearchScreen> {
 
   @override
   void initState() {
-    client = PixivClient();
-    client.connect(refreshToken);
     scrollController.addListener(() {
       if (scrollController.position.atEdge) {
         bool isTop = scrollController.position.pixels == 0;
@@ -81,6 +78,10 @@ class SearchState extends State<SearchScreen> {
     incompleteSearchTerm = '';
   }
 
+  void setStateIfMounted(f) {
+    if (mounted) setState(f);
+  }
+
   Future<Uint8List> loadImage(String unencodedPath) async {
     Uint8List out = await client.getIllustImageBytes(unencodedPath);
     return out;
@@ -88,7 +89,7 @@ class SearchState extends State<SearchScreen> {
 
   Future<void> updateAutoComplete() async {
     if (incompleteSearchTerm.isEmpty) {
-      setState(() {
+      setStateIfMounted(() {
         suggestions = [];
       });
       return;
@@ -96,7 +97,7 @@ class SearchState extends State<SearchScreen> {
 
     var response = await client.getSearchAutoCompleteV2(incompleteSearchTerm);
 
-    setState(() {
+    setStateIfMounted(() {
       suggestions = List<Map<String, dynamic>>.from(response['tags']);
     });
   }
@@ -113,7 +114,7 @@ class SearchState extends State<SearchScreen> {
       }
       Uint8List img = await loadImage(illust.imageUrls['square_medium']);
 
-      setState(() {
+      setStateIfMounted(() {
         hasMore = true;
         images.add(img);
         imageIds.add(illust.id);
@@ -141,7 +142,7 @@ class SearchState extends State<SearchScreen> {
         continue;
       }
 
-      setState(() {
+      setStateIfMounted(() {
         if (!imageIds.contains(illust.id)) {
           if (targetTag == null) {
             return;
@@ -237,6 +238,7 @@ class SearchState extends State<SearchScreen> {
               color: Colors.white,
               child: Center(
                 child: TextField(
+                    autofocus: true,
                     controller: textController,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.search,

@@ -24,7 +24,7 @@ class SearchState extends State<SearchScreen> {
 
   List<Map<String, dynamic>> suggestions = [];
   List<PixivIllust> cachedIllusts = [];
-  List<Uint8List> images = [];
+  List<Uint8List> cachedImages = [];
   List<int> imageIds = [];
   int noPremiumPopularityIndex = 0;
   final scrollController = ScrollController();
@@ -60,7 +60,7 @@ class SearchState extends State<SearchScreen> {
     if (keyTerm.isNotEmpty) {
       showSuggests = false;
       searchKeyTerm = textController.text;
-      images = [];
+      cachedImages = [];
       imageIds = [];
       cachedIllusts = [];
       incompleteSearchTerm = '';
@@ -72,7 +72,7 @@ class SearchState extends State<SearchScreen> {
 
   void resetSearch() {
     searchKeyTerm = '';
-    images = [];
+    cachedImages = [];
     imageIds = [];
     cachedIllusts = [];
     incompleteSearchTerm = '';
@@ -116,7 +116,7 @@ class SearchState extends State<SearchScreen> {
 
       setStateIfMounted(() {
         hasMore = true;
-        images.add(img);
+        cachedImages.add(img);
         imageIds.add(illust.id);
         cachedIllusts.add(illust);
       });
@@ -156,7 +156,7 @@ class SearchState extends State<SearchScreen> {
             }
           }
           if (illustTags.contains(targetTag.toLowerCase())) {
-            images.add(img);
+            cachedImages.add(img);
             imageIds.add(illust.id);
             cachedIllusts.add(illust);
           }
@@ -194,7 +194,7 @@ class SearchState extends State<SearchScreen> {
             }));
   }
 
-  Widget resultsWidget(BuildContext context) {
+  Widget resultsWidget(BuildContext context, List<Uint8List> images) {
     return GridView.builder(
         controller: scrollController,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -272,7 +272,7 @@ class SearchState extends State<SearchScreen> {
                   })
             ]),
         body: !showSuggests
-            ? resultsWidget(context)
+            ? resultsWidget(context, cachedImages)
             : suggestionsWidget(context));
   }
 }

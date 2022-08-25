@@ -8,6 +8,8 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
   LoginState createState() => LoginState();
 }

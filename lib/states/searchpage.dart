@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:nakiapp/globals.dart';
+import 'package:nakiapp/models/cachedillustresult.dart';
 import 'package:nakiapp/states/illustview.dart';
 import 'package:nakiapp/utils.dart';
+import 'package:nakiapp/widgets/resultsWidget.dart';
 import 'package:pxdart/pxdart.dart';
 import '../models/pixivillust.dart';
 import './seachoptions.dart';
@@ -22,10 +24,9 @@ class SearchState extends State<SearchScreen> {
   bool isLoadingMore = false;
   bool showSuggests = true;
 
+  List<CachedIllustResult> cachedIllustResults = [];
+
   List<Map<String, dynamic>> suggestions = [];
-  List<PixivIllust> cachedIllusts = [];
-  List<Uint8List> cachedImages = [];
-  List<int> imageIds = [];
   int noPremiumPopularityIndex = 0;
   final scrollController = ScrollController();
   final textController = TextEditingController();
@@ -34,6 +35,10 @@ class SearchState extends State<SearchScreen> {
   void initState() {
     scrollController.addListener(() {
       if (scrollController.position.atEdge) {
+        List<int> imageIds = [];
+        for (CachedIllustResult result in cachedIllustResults) {
+          imageIds.add(result.id);
+        }
         bool isTop = scrollController.position.pixels == 0;
         if (noPremiumPopularityIndex > imageIds.length) {
           hasMore = false;
@@ -60,9 +65,7 @@ class SearchState extends State<SearchScreen> {
     if (keyTerm.isNotEmpty) {
       showSuggests = false;
       searchKeyTerm = textController.text;
-      cachedImages = [];
-      imageIds = [];
-      cachedIllusts = [];
+      cachedIllustResults = [];
       incompleteSearchTerm = '';
       if (searchKeyTerm.isNotEmpty) {
         loadImages(textController.text);
@@ -72,9 +75,7 @@ class SearchState extends State<SearchScreen> {
 
   void resetSearch() {
     searchKeyTerm = '';
-    cachedImages = [];
-    imageIds = [];
-    cachedIllusts = [];
+    cachedIllustResults = [];
     incompleteSearchTerm = '';
   }
 
@@ -116,9 +117,7 @@ class SearchState extends State<SearchScreen> {
 
       setStateIfMounted(() {
         hasMore = true;
-        cachedImages.add(img);
-        imageIds.add(illust.id);
-        cachedIllusts.add(illust);
+        cachedIllustResults.add(CachedIllustResult(img, illust.id, illust));
       });
     }
 
@@ -143,6 +142,11 @@ class SearchState extends State<SearchScreen> {
       }
 
       setStateIfMounted(() {
+        List<int> imageIds = [];
+        for (CachedIllustResult result in cachedIllustResults) {
+          imageIds.add(result.id);
+        }
+
         if (!imageIds.contains(illust.id)) {
           if (targetTag == null) {
             return;
@@ -156,9 +160,7 @@ class SearchState extends State<SearchScreen> {
             }
           }
           if (illustTags.contains(targetTag.toLowerCase())) {
-            cachedImages.add(img);
-            imageIds.add(illust.id);
-            cachedIllusts.add(illust);
+            cachedIllustResults.add(CachedIllustResult(img, illust.id, illust));
           }
         }
       });
@@ -192,40 +194,6 @@ class SearchState extends State<SearchScreen> {
                     });
               }
             }));
-  }
-
-  Widget resultsWidget(BuildContext context, List<Uint8List> images) {
-    return GridView.builder(
-        controller: scrollController,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
-        itemCount: images.length + 1,
-        itemBuilder: (context, index) {
-          if (index < images.length) {
-            try {
-              final illust = InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => IllustViewScreen(
-                                illust: cachedIllusts[index], client: client)));
-                  },
-                  child: Image.memory(images[index]));
-              return illust;
-            } catch (e) {
-              return Container();
-            }
-          } else {
-            return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: Center(
-                    child: isLoadingMore
-                        ? const CircularProgressIndicator()
-                        : Container()));
-          }
-        });
   }
 
   @override
@@ -272,7 +240,8 @@ class SearchState extends State<SearchScreen> {
                   })
             ]),
         body: !showSuggests
-            ? resultsWidget(context, cachedImages)
+            ? resultsWidget(client, context, cachedIllustResults,
+                scrollController, 2, isLoadingMore)
             : suggestionsWidget(context));
   }
 }

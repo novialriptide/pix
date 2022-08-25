@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/recommended.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';

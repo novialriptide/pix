@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nakiapp/globals.dart';
-import 'package:nakiapp/states/illustview.dart';
 import 'package:nakiapp/states/login.dart';
-
-import 'states/searchpage.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,14 +1,8 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/recommended.dart';
-import 'package:nakiapp/states/searchpage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'dart:io';
 import 'dart:math';
-import 'package:oauth2/oauth2.dart' as oauth2;
-import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 

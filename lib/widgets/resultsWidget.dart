@@ -1,7 +1,4 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:nakiapp/models/cachedillustresult.dart';
 import 'package:nakiapp/states/illustview.dart';
 import 'package:pxdart/pxdart.dart';

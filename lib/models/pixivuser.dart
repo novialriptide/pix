@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class PixivUser {
   int userId;
   String displayName;

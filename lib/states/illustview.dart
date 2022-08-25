@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/searchpage.dart';
 import 'package:pxdart/pxdart.dart';
 import '../models/pixivillust.dart';

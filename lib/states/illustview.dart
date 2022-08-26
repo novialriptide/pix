@@ -2,7 +2,8 @@ import 'dart:typed_data';
 
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:nakiapp/states/searchpage.dart';
+import 'package:nakiapp/models/pixivuser.dart';
+import 'package:nakiapp/states/profileview.dart';
 import 'package:pxdart/pxdart.dart';
 import '../models/pixivillust.dart';
 
@@ -11,6 +12,7 @@ class IllustViewScreen extends StatelessWidget {
 
   final PixivClient client;
   final PixivIllust illust;
+  late PixivUser pixivProfile;
 
   List<String> imageUrls = [];
 
@@ -27,6 +29,8 @@ class IllustViewScreen extends StatelessWidget {
   }
 
   Future<Uint8List> getUserImage() async {
+    pixivProfile =
+        PixivUser.fromJson(await client.getUserDetails(illust.userId));
     return await client.getIllustImageBytes(illust.userProfileImages['medium']);
   }
 
@@ -98,7 +102,8 @@ class IllustViewScreen extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SearchScreen()));
+                            builder: (context) => ProfileViewScreen(
+                                client: client, profile: pixivProfile)));
                   },
                   child: Row(children: [
                     SizedBox(

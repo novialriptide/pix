@@ -19,6 +19,10 @@ class ProfileViewScreen extends StatelessWidget {
 
   Future<Uint8List> getUserBackground() async {
     debugPrint(profile.backgroundImageUrl);
+    if (profile.backgroundImageUrl == null) {
+      return await client
+          .getIllustImageBytes(profile.profileImageUrls['medium']);
+    }
     return await client.getIllustImageBytes(profile.backgroundImageUrl!);
   }
 

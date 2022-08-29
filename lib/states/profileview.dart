@@ -24,19 +24,15 @@ class ProfileViewScreen extends StatelessWidget {
     return await client.getIllustImageBytes(profile.profileImageUrls['medium']);
   }
 
-  Future<List<CachedIllustResult>> getPreviewImages(int quantity) async {
+  Future<List<Uint8List>> getPreviewImages(int quantity) async {
     List<PixivIllust> illusts = await getUserIllusts(client, profile.userId);
-    List<CachedIllustResult> cachedIllustResults = [];
+    List<Uint8List> images = [];
     for (int i = 0; i < quantity; i++) {
-      CachedIllustResult c = CachedIllustResult(
-          await client
-              .getIllustImageBytes(illusts[i].imageUrls['square_medium']),
-          illusts[i].id,
-          illusts[i]);
-      cachedIllustResults.add(c);
+      images.add(await client
+          .getIllustImageBytes(illusts[i].imageUrls['square_medium']));
     }
 
-    return cachedIllustResults;
+    return images;
   }
 
   Future<Uint8List> getUserBackground() async {
@@ -146,7 +142,7 @@ class ProfileViewScreen extends StatelessWidget {
                     return previewWidget(
                       client,
                       context,
-                      snapshot.data as List<CachedIllustResult>,
+                      snapshot.data as List<Uint8List>,
                       const Text('Illustrations',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 15)),

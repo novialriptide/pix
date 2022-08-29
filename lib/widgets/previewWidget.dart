@@ -1,19 +1,17 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:nakiapp/models/cachedillustresult.dart';
 import 'package:nakiapp/models/pixivillust.dart';
 import 'package:nakiapp/states/illustview.dart';
-import 'package:nakiapp/widgets/illustChildGrid.dart';
 import 'package:pxdart/pxdart.dart';
 
 Widget previewWidget(
   PixivClient client,
   BuildContext context,
-  List<CachedIllustResult> cachedIllustResults,
+  List<Uint8List> images,
   Text title,
   bool isLoadingMore,
-  int maxIllusts,
+  int maxImages,
 ) {
   return Column(children: [
     Row(children: [title]),
@@ -23,11 +21,10 @@ Widget previewWidget(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
       ),
-      itemCount: maxIllusts,
+      itemCount: maxImages,
       itemBuilder: (context, index) {
-        if (index < cachedIllustResults.length) {
-          final illust =
-              illustChildGrid(context, cachedIllustResults[index], client);
+        if (index < images.length) {
+          final illust = Image.memory(images[index]);
           return illust;
         } else {
           return Padding(

@@ -5,15 +5,21 @@ import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/models/cachedillustresult.dart';
 import 'package:nakiapp/utils.dart';
 import 'package:nakiapp/widgets/resultsWidget.dart';
+import 'package:pxdart/pxdart.dart';
 import '../models/pixivillust.dart';
 import './seachoptions.dart';
 
 class SearchScreen extends StatefulWidget {
+  PixivClient client;
+
+  SearchScreen(this.client, {Key? key}) : super(key: key);
+
   @override
-  SearchState createState() => SearchState();
+  SearchState createState() => SearchState(client);
 }
 
 class SearchState extends State<SearchScreen> {
+  PixivClient client;
   String searchKeyTerm = "";
   String incompleteSearchTerm = "";
   bool hasMore = false;
@@ -26,6 +32,8 @@ class SearchState extends State<SearchScreen> {
   int noPremiumPopularityIndex = 0;
   final scrollController = ScrollController();
   final textController = TextEditingController();
+
+  SearchState(this.client);
 
   @override
   void initState() {

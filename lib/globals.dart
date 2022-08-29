@@ -13,5 +13,3 @@ String loginUrl = 'https://app-api.pixiv.net/web/v1/login';
 
 String authTokenHost = 'oauth.secure.pixiv.net';
 String authTokenPath = '/auth/token';
-
-PixivClient client = PixivClient();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/states/recommended.dart';
+import 'package:pxdart/pxdart.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
@@ -78,12 +79,13 @@ class LoginState extends State<LoginScreen> {
               getCode(error.failingUrl.toString(), code_verifier)
                   .then((result) {
                 refreshToken = result['refresh_token'];
+                PixivClient client = PixivClient();
                 client.connect(refreshToken);
 
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => RecommendedScreen()));
+                        builder: (context) => RecommendedScreen(client)));
               });
             }),
             javascriptMode: JavascriptMode.unrestricted,

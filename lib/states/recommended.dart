@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:pxdart/pxdart.dart';
 import './searchpage.dart';
 
 class RecommendedScreen extends StatefulWidget {
+  PixivClient client;
+
+  RecommendedScreen(this.client, {Key? key}) : super(key: key);
   @override
-  RecommendedState createState() => RecommendedState();
+  RecommendedState createState() => RecommendedState(client);
 }
 
 class RecommendedState extends State<RecommendedScreen> {
+  PixivClient client;
+
+  RecommendedState(this.client);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +31,7 @@ class RecommendedState extends State<RecommendedScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SearchScreen()));
+                              builder: (context) => SearchScreen(client)));
                     },
                     decoration: const InputDecoration(
                         hintText: 'Search keyterm/ID',

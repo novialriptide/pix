@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nakiapp/models/cachedillustresult.dart';
 import 'package:nakiapp/states/illustview.dart';
+import 'package:nakiapp/widgets/illustChildGrid.dart';
 import 'package:pxdart/pxdart.dart';
 
 Widget resultsWidget(
@@ -19,16 +20,8 @@ Widget resultsWidget(
       itemBuilder: (context, index) {
         if (index < cachedIllustResults.length) {
           try {
-            final illust = InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => IllustViewScreen(
-                              illust: cachedIllustResults[index].illust,
-                              client: client)));
-                },
-                child: Image.memory(cachedIllustResults[index].image));
+            final illust =
+                illustChildGrid(context, cachedIllustResults[index], client);
             return illust;
           } catch (e) {
             return Container();

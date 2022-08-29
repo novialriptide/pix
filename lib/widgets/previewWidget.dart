@@ -1,40 +1,34 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:nakiapp/models/cachedillustresult.dart';
 import 'package:nakiapp/models/pixivillust.dart';
 import 'package:nakiapp/states/illustview.dart';
+import 'package:nakiapp/widgets/illustChildGrid.dart';
 import 'package:pxdart/pxdart.dart';
 
 Widget previewWidget(
   PixivClient client,
   BuildContext context,
-  List<PixivIllust> illusts,
-  String title,
+  List<CachedIllustResult> cachedIllustResults,
+  Text title,
   bool isLoadingMore,
+  int maxIllusts,
 ) {
   return Column(children: [
-    Row(children: [Text(title)]),
+    Row(children: [title]),
     GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
       ),
-      itemCount: illusts.length,
+      itemCount: maxIllusts,
       itemBuilder: (context, index) {
-        if (index < illusts.length) {
-          try {
-            final illust = InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => IllustViewScreen(
-                                illust: illusts[index],
-                                client: client,
-                              )));
-                },
-                child: Image.memory(illusts[index].imageUrls['medium_square']));
-            return illust;
-          } catch (e) {
-            return Container();
-          }
+        if (index < cachedIllustResults.length) {
+          final illust =
+              illustChildGrid(context, cachedIllustResults[index], client);
+          return illust;
         } else {
           return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0),

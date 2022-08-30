@@ -25,6 +25,7 @@ class ProfileIllustViewScreen extends StatefulWidget {
 class ProfileIllustViewState extends State<ProfileIllustViewScreen> {
   PixivClient client;
   PixivUser profile;
+  int offset = 0;
   bool hasMore = false;
   bool isLoadingMore = false;
 
@@ -44,12 +45,10 @@ class ProfileIllustViewState extends State<ProfileIllustViewScreen> {
           imageIds.add(result.id);
         }
         bool isTop = scrollController.position.pixels == 0;
-        if (true) {
-          hasMore = false;
-        }
 
         if (!isTop && hasMore && !isLoadingMore) {
-          // load more
+          offset += 30;
+          loadImages();
         }
       }
     });
@@ -65,11 +64,11 @@ class ProfileIllustViewState extends State<ProfileIllustViewScreen> {
     return out;
   }
 
-  Future<void> loadImages() async {
+  Future<int> loadImages() async {
     // Use getRelatedIllusts() to simulate Pixiv Premium
     isLoadingMore = true;
     List<Uint8List> widgets = [];
-    List illusts = await getUserIllusts(client, profile.userId);
+    List illusts = await getUserIllusts(client, profile.userId, offset: offset);
 
     for (PixivIllust illust in illusts) {
       if (illust.imageUrls['square_medium'] == null) {
@@ -84,6 +83,12 @@ class ProfileIllustViewState extends State<ProfileIllustViewScreen> {
     }
 
     isLoadingMore = false;
+
+    if (illusts.length < 30) {
+      hasMore = false;
+    }
+
+    return illusts.length;
   }
 
   @override

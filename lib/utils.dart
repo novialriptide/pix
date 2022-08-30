@@ -25,8 +25,9 @@ Future<dynamic> getIllustRelated(PixivClient client, int illustId) async {
   return parsedIllusts;
 }
 
-Future<List<PixivIllust>> getUserIllusts(PixivClient client, int userId) async {
-  Map decodedResponse = await client.getUserIllusts(userId);
+Future<List<PixivIllust>> getUserIllusts(PixivClient client, int userId,
+    {int offset = 0}) async {
+  Map decodedResponse = await client.getUserIllusts(userId, offset: offset);
   List<PixivIllust> parsedIllusts = [];
   List illusts = decodedResponse["illusts"];
   for (int i = 0; i < illusts.length; i++) {

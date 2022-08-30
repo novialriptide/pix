@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nakiapp/models/cachedillustresult.dart';
 import 'package:nakiapp/models/pixivillust.dart';
 import 'package:nakiapp/models/pixivuser.dart';
+import 'package:nakiapp/states/profileillustsview.dart';
 import 'package:nakiapp/utils.dart';
 import 'package:nakiapp/widgets/previewWidget.dart';
 import 'package:pxdart/pxdart.dart';
@@ -132,27 +133,36 @@ class ProfileViewScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(
                   bottom: 10.0, left: 10.0, right: 10.0, top: 10),
-              child: FutureBuilder<List>(
-                future: getPreviewImages(6),
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<List> snapshot,
-                ) {
-                  if (snapshot.hasData) {
-                    return previewWidget(
-                      client,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
                       context,
-                      snapshot.data as List<Uint8List>,
-                      const Text('Illustrations',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15)),
-                      isLoadingMoreIllusts,
-                      6,
-                    );
-                  } else {
-                    return const Text('Loading illustrations');
-                  }
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ProfileIllustViewScreen(client, profile)));
                 },
+                child: FutureBuilder<List>(
+                  future: getPreviewImages(6),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<List> snapshot,
+                  ) {
+                    if (snapshot.hasData) {
+                      return previewWidget(
+                        client,
+                        context,
+                        snapshot.data as List<Uint8List>,
+                        const Text('Illustrations',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15)),
+                        isLoadingMoreIllusts,
+                        6,
+                      );
+                    } else {
+                      return const Text('Loading illustrations');
+                    }
+                  },
+                ),
               ),
             ),
           ]),

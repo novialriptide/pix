@@ -1,7 +1,23 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:nakiapp/states/login.dart';
 
 void main() {
+  bool isInDebugMode = false;
+
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    final dynamic exception = details.exception;
+    final StackTrace? stackTrace = details.stack;
+    if (isInDebugMode) {
+      // In development mode simply print to console.
+      FlutterError.dumpErrorToConsole(details);
+    } else {
+      // In production mode report to the application zone
+      Zone.current.handleUncaughtError(exception, stackTrace!);
+    }
+  };
   runApp(const MyApp());
 }
 

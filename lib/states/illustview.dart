@@ -12,7 +12,7 @@ class IllustViewScreen extends StatelessWidget {
 
   final PixivClient client;
   final PixivIllust illust;
-  late PixivUser pixivProfile;
+  PixivUser? pixivProfile = null;
 
   List<String> imageUrls = [];
 
@@ -99,11 +99,16 @@ class IllustViewScreen extends StatelessWidget {
             child: Row(children: [
               InkWell(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProfileViewScreen(
-                                client: client, profile: pixivProfile)));
+                    if (pixivProfile != null) {
+                      debugPrint('lmao');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfileViewScreen(
+                                  client: client, profile: pixivProfile!)));
+                    } else if (pixivProfile == null) {
+                      debugPrint('profile isnt loaded yet');
+                    }
                   },
                   child: Row(children: [
                     SizedBox(

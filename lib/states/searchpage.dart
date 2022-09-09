@@ -1,7 +1,7 @@
 import 'dart:typed_data';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/models/cachedillustresult.dart';
 import 'package:nakiapp/utils.dart';
 import 'package:nakiapp/widgets/resultsWidget.dart';
@@ -27,7 +27,6 @@ class SearchState extends State<SearchScreen> {
   bool showSuggests = true;
 
   List<CachedIllustResult> cachedIllustResults = [];
-
   List<Map<String, dynamic>> suggestions = [];
   int noPremiumPopularityIndex = 0;
   final scrollController = ScrollController();
@@ -108,7 +107,6 @@ class SearchState extends State<SearchScreen> {
   }
 
   Future<void> loadImages(String keyTerm) async {
-    // Use getRelatedIllusts() to simulate Pixiv Premium
     isLoadingMore = true;
     List<Uint8List> widgets = [];
     List illusts = await getPopularPreviewIllusts(client, keyTerm);
@@ -118,6 +116,10 @@ class SearchState extends State<SearchScreen> {
         continue;
       }
       Uint8List img = await loadImage(illust.imageUrls['square_medium']);
+
+      if (keyTerm != searchKeyTerm) {
+        return;
+      }
 
       setStateIfMounted(() {
         hasMore = true;
@@ -146,6 +148,10 @@ class SearchState extends State<SearchScreen> {
       }
 
       setStateIfMounted(() {
+        if (targetTag != searchKeyTerm) {
+          return;
+        }
+
         List<int> imageIds = [];
         for (CachedIllustResult result in cachedIllustResults) {
           imageIds.add(result.id);
@@ -219,7 +225,9 @@ class SearchState extends State<SearchScreen> {
                       updateAutoComplete();
                     }),
                     onSubmitted: (_) {
-                      submitSearch(textController.text);
+                      if (textController.text != searchKeyTerm) {
+                        submitSearch(textController.text);
+                      }
                     },
                     onTap: () {
                       showSuggests = true;

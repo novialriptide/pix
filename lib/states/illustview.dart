@@ -196,7 +196,7 @@ class IllustViewScreen extends StatelessWidget {
             ])));
   }
 
-  void downloadImage() async {
+  void downloadImages() async {
     Map<String, String> header = client.getHeader();
     header["Referer"] = "https://app-api.pixiv.net/";
     for (String url in largeImageUrls) {
@@ -225,7 +225,7 @@ class IllustViewScreen extends StatelessWidget {
               IconButton(
                   icon: const Icon(Icons.file_download),
                   onPressed: () {
-                    downloadImage();
+                    downloadImages();
                   }),
               IconButton(icon: const Icon(Icons.menu), onPressed: () {})
             ]),

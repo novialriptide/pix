@@ -1,8 +1,12 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:nakiapp/globals.dart';
 import 'package:nakiapp/models/pixivuser.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nakiapp/states/profileview.dart';
 import 'package:pxdart/pxdart.dart';
 import '../models/pixivillust.dart';
@@ -182,6 +186,13 @@ class IllustViewScreen extends StatelessWidget {
             ])));
   }
 
+  void downloadImage() async {
+    Map<String, String> header = client.getHeader();
+    header["Referer"] = "https://app-api.pixiv.net/";
+    await GallerySaver.saveImage(illust.imageUrls['large'],
+        headers: header, albumName: albumName);
+  }
+
   @override
   Widget build(BuildContext context) {
     getImages();
@@ -200,7 +211,10 @@ class IllustViewScreen extends StatelessWidget {
             shape: const ContinuousRectangleBorder(),
             actions: [
               IconButton(
-                  icon: const Icon(Icons.file_download), onPressed: () {}),
+                  icon: const Icon(Icons.file_download),
+                  onPressed: () {
+                    downloadImage();
+                  }),
               IconButton(icon: const Icon(Icons.menu), onPressed: () {})
             ]),
         body: ExpandableBottomSheet(

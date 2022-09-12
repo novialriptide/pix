@@ -41,6 +41,8 @@ dependencies:
   webview_flutter: ^3.0.4
   oauth2: ^2.0.0
   crypto: ^3.0.2
+  gallery_saver: ^2.3.2
+  image_picker: ^0.8.5
 
 dev_dependencies:
   flutter_test:

@@ -189,8 +189,9 @@ class IllustViewScreen extends StatelessWidget {
   void downloadImage() async {
     Map<String, String> header = client.getHeader();
     header["Referer"] = "https://app-api.pixiv.net/";
-    await GallerySaver.saveImage(illust.imageUrls['large'],
-        headers: header, albumName: albumName);
+    for (String url in imageUrls) {
+      await GallerySaver.saveImage(url, headers: header, albumName: albumName);
+    }
   }
 
   @override

@@ -19,16 +19,26 @@ class IllustViewScreen extends StatelessWidget {
   PixivUser? pixivProfile = null;
 
   List<String> imageUrls = [];
+  List<String> largeImageUrls = [];
 
   ScrollController illustScrollController = ScrollController();
   ScrollController infoScrollController = ScrollController();
 
   void getImages() {
     if (illust.jsonMetaSinglePage.isNotEmpty) {
-      imageUrls.add(illust.imageUrls['large']);
+      imageUrls.add(illust.imageUrls['medium']);
     }
     for (Map img in illust.jsonMetaPages) {
       imageUrls.add(img['image_urls']['medium']);
+    }
+  }
+
+  void getLargeImages() {
+    if (illust.jsonMetaSinglePage.isNotEmpty) {
+      largeImageUrls.add(illust.imageUrls['large']);
+    }
+    for (Map img in illust.jsonMetaPages) {
+      largeImageUrls.add(img['image_urls']['large']);
     }
   }
 
@@ -189,7 +199,7 @@ class IllustViewScreen extends StatelessWidget {
   void downloadImage() async {
     Map<String, String> header = client.getHeader();
     header["Referer"] = "https://app-api.pixiv.net/";
-    for (String url in imageUrls) {
+    for (String url in largeImageUrls) {
       await GallerySaver.saveImage(url, headers: header, albumName: albumName);
     }
   }
@@ -197,6 +207,7 @@ class IllustViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     getImages();
+    getLargeImages();
     return Scaffold(
         extendBodyBehindAppBar: true,
         floatingActionButton: FloatingActionButton(

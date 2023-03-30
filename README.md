@@ -1,6 +1,6 @@
 # pix
 
-An unofficial Pixiv app that introduces new features for Android built with Flutter.
+An unofficial Pixiv app that introduces new features for Android built with Flutter. Uses [pxdart](https://github.com/novialriptide/pxdart)
 
 
 ## Images
